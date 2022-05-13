@@ -7,3 +7,5 @@ UNICODE_ENABLE = no
 # COMBO_ENABLE =  yes
 # TAP_DANCE_ENABLE = yes
 #VIA_ENABLE = yes
+
+SRC += oled.c
