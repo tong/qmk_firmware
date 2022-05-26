@@ -17,8 +17,12 @@
 #pragma once
 
 #ifdef OLED_ENABLE
-  //#define OLED_DISPLAY_128X64
-  //#define OLED_FONT_H "keyboards/splitkb/kyria/keymaps/benji/glcdfont.c"
+    //#define OLED_DISPLAY_128X64
+    #define OLED_TIMEOUT 10000
+    //#define OLED_FADE_OUT
+    //#define OLED_FADE_OUT_INTERVAL 15
+    //#define OLED_BRIGHTNESS 23
+    //#define OLED_FONT_H "keyboards/splitkb/kyria/keymaps/benji/glcdfont.c"
 #endif
 
 #ifdef RGBLIGHT_ENABLE
