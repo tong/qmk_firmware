@@ -1,6 +1,9 @@
 #include QMK_KEYBOARD_H
 #include <stdio.h>
+#include <string.h>
 #include "raw_hid.h"
+
+#define RAW_EPSIZE 32
 
 #ifdef ENCODER_ENABLE
 #    include "encoder_utils.h"
@@ -19,6 +22,9 @@ enum layers {
 uint8_t mod_state;
 // uint16_t copy_paste_timer;
 
+uint16_t wpm;
+char wpm_str[4];
+
 enum custom_keycodes {
     KC_QMKBEST = SAFE_RANGE,
     ENC_MODE_L,
@@ -30,12 +36,14 @@ enum custom_keycodes {
     KC_EVIL5,
 };
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT(KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, KC_LSFT, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_RSFT, MT(MOD_LCTL, KC_ESC), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LALT, KC_QMKBEST, KC_NO, KC_LEAD, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_ESC, ENC_MODE_L, KC_LGUI, MO(1), KC_SPC, MO(2), MO(1), KC_ENT, MO(2), KC_RALT, KC_APP),
-                                                              [1] = LAYOUT(KC_TAB, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSPC, KC_LSFT, KC_LALT, KC_END, KC_PGDN, KC_PGUP, KC_HOME, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_RALT, KC_RSFT, KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO, KC_WSCH, KC_NO, KC_NO, KC_NO, KC_NO, KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_NO, KC_ESC, KC_NO, KC_LGUI, KC_NO, KC_SPC, MO(5), MO(4), KC_ENT, MO(3), KC_RALT, KC_APP),
-                                                              [2] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_EQL, KC_TILD, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PLUS, KC_PIPE, KC_BSLS, KC_UNDS, KC_MINS, KC_QUOT, KC_DQUO, KC_LCBR, KC_NO, KC_NO, KC_RCBR, KC_NO, KC_LCBR, KC_RCBR, KC_LBRC, KC_RBRC, KC_QUES, KC_NO, KC_NO, MO(4), MO(5), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO),
-                                                              [3] = LAYOUT(KC_NO, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_NO, KC_NO, KC_NO, KC_DEL, KC_NO, KC_NO, KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_NO, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_ESC, KC_NO, KC_NO, KC_TRNS, KC_SPC, KC_TRNS, KC_NO, KC_ENT, KC_TRNS, KC_RALT, KC_NO),
-                                                              [4] = LAYOUT(KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MRWD, KC_MPRV, KC_MNXT, KC_MFFD, KC_NO, KC_BSPC, KC_NO, KC_NO, KC_NO, BL_INC, BL_DEC, KC_NO, KC_MPLY, KC_VOLD, KC_VOLU, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, BL_BRTG, BL_STEP, BL_TOGG, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MSTP, KC_MUTE, KC_NO, KC_NO, KC_NO, KC_ESC, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_TRNS, KC_ENT, KC_NO, KC_RALT, KC_NO),
-                                                              [5] = LAYOUT(KC_NO, KC_EVIL1, KC_EVIL2, KC_EVIL3, KC_EVIL4, KC_EVIL5, KC_WHOM, KC_WSCH, KC_WREF, KC_WFAV, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_WBAK, KC_NO, KC_NO, KC_WFWD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO)};
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+        [0] = LAYOUT(KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, KC_LSFT, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_RSFT, MT(MOD_LCTL, KC_ESC), KC_Z, KC_X, KC_C, KC_V, KC_B, MO(2), KC_QMKBEST, KC_NO, KC_LEAD, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_ESC, ENC_MODE_L, KC_LGUI, MO(1), KC_SPC, KC_LALT, MO(1), KC_ENT, MO(2), KC_RALT, KC_APP),
+        [1] = LAYOUT(KC_TAB, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSPC, KC_LSFT, KC_LALT, KC_NO, KC_NO, KC_NO, KC_WSCH, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_RALT, KC_RSFT, KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_HOME, KC_PGDN, KC_PGUP, KC_END, KC_NO, KC_ESC, KC_NO, KC_LGUI, KC_NO, KC_SPC, MO(5), MO(4), KC_ENT, MO(3), KC_RALT, KC_APP),
+        [2] = LAYOUT(KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_EQL, KC_TILD, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PLUS, KC_PIPE, KC_BSLS, KC_UNDS, KC_MINS, KC_QUOT, KC_DQUO, KC_LCBR, KC_NO, KC_NO, KC_RCBR, KC_NO, KC_LCBR, KC_RCBR, KC_LBRC, KC_RBRC, KC_QUES, KC_NO, KC_NO, MO(4), MO(5), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO),
+        [3] = LAYOUT(KC_NO, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_NO, KC_NO, KC_END, KC_DEL, KC_HOME, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_ESC, KC_NO, KC_NO, KC_TRNS, KC_SPC, KC_TRNS, KC_NO, KC_ENT, KC_TRNS, KC_RALT, KC_NO),
+        [4] = LAYOUT(KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MRWD, KC_MPRV, KC_MNXT, KC_MFFD, KC_NO, KC_BSPC, KC_NO, KC_NO, KC_NO, BL_INC, BL_DEC, KC_NO, KC_MPLY, KC_VOLD, KC_VOLU, KC_NO, KC_BRIU, KC_NO, KC_NO, KC_NO, BL_BRTG, BL_STEP, BL_TOGG, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_MSTP, KC_MUTE, KC_NO, KC_NO, KC_BRID, KC_ESC, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_TRNS, KC_ENT, KC_NO, KC_RALT, KC_NO),
+        [5] = LAYOUT(KC_NO, KC_EVIL1, KC_EVIL2, KC_EVIL3, KC_EVIL4, KC_EVIL5, KC_WHOM, KC_WSCH, KC_WREF, KC_WFAV, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_WBAK, KC_NO, KC_NO, KC_WFWD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO)
+};
 
 LEADER_EXTERNS();
 
@@ -147,8 +155,44 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 break;
         }
     }
+    
+    /*
+    uint8_t buf[32]; 
+    memset(buf,0x00,sizeof(buf));
+    buf[0] = 0x07;
+    buf[1] = (wpm >> 8) & 0xff;
+    buf[2] = wpm & 0xff;
+    //raw_hid_send(buf,sizeof(buf));
+    */
     return true;
 }
+
+#ifdef RAW_ENABLE
+//char    raw_hid_buf[32]        = {};
+uint8_t raw_hid_bytes_received = 0;
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    raw_hid_bytes_received += length;
+    raw_hid_send(data, length);
+}
+#endif
+
+#ifdef ENCODER_ENABLE
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    if (index == 0) {
+        encoder_action(get_encoder_mode(true), clockwise);
+#    ifdef OLED_ENABLE
+        oled_on();
+#    endif
+    } else if (index == 1) {
+        encoder_action(get_encoder_mode(false), clockwise);
+#    ifdef OLED_ENABLE
+        oled_on();
+#    endif
+    }
+
+    return true;
+}
+#endif
 
 #ifdef OLED_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -243,19 +287,19 @@ static void oled_render_status_hid(void) {
 }
 
 static void oled_render_status_wpm(void) {
-    oled_write_P(PSTR("WPM "), false);
-    uint8_t wpm = get_current_wpm();
-    if (wpm >= 0) {
-        // oled_set_cursor(18,0);
-        oled_write(get_u8_str(wpm, '0'), false);
-        // wpm_str[3] = '\0';
-        // wpm_str[2] = '0' + wpm % 10;
-        // wpm_str[1] = '0' + (wpm /= 10) % 10;
-        // wpm_str[0] = '0' + wpm / 10 ;
-        // oled_write_P(PSTR("\n"), false);
-        // oled_write_P(PSTR("        WPM: "), false);
-        // oled_write(wpm_str, false);
-    }
+    wpm = get_current_wpm();
+    wpm_str[3] = '\0';
+    wpm_str[2] = '0' + wpm % 10;
+    wpm_str[1] = (wpm /= 10) % 10 ? '0' + (wpm) % 10 : (wpm / 10) % 10 ? '0' : ' ';
+    wpm_str[0] = wpm / 10 ? '0' + wpm / 10 : ' ';
+    oled_write_P(PSTR("WPM:"), false);
+    oled_write(wpm_str, false);
+    
+    /*unsigned char buf[3]; */
+    /*buf[0] = 0x0;*/
+    /*buf[1] = 0x07;*/
+    /*buf[2] = n;*/
+    /*raw_hid_send(buf,3);*/
 }
 
 static void oled_render_status(void) {
@@ -273,8 +317,12 @@ static void oled_render_status(void) {
     oled_write_P(PSTR("\n"), false);
     oled_render_status_hid();
     oled_write_P(PSTR("\n"), false);
-    // oled_write_P(get_u8_str(raw_hid_bytes_received,' '), false);
-    // oled_write_P(PSTR("\n"), false);
+
+    //oled_set_cursor(17, 3);
+    //oled_write_P(PSTR("NKRO"), keymap_config.nkro);
+
+    oled_write_P(PSTR("RX "), false);
+    oled_write(get_u8_str(raw_hid_bytes_received,' '), false);
     // oled_write_P(PSTR("\n"), false);
     // oled_write_P(PSTR("KEYLOG"), false);
     // oled_write(read_keylogs(), false);
@@ -283,7 +331,6 @@ static void oled_render_status(void) {
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
-        // oled_clear();
         oled_render_status();
     } else {
         oled_render_logo();
@@ -292,30 +339,3 @@ bool oled_task_user(void) {
 }
 #endif
 
-#ifdef ENCODER_ENABLE
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        encoder_action(get_encoder_mode(true), clockwise);
-#    ifdef OLED_ENABLE
-        oled_on();
-#    endif
-    } else if (index == 1) {
-        encoder_action(get_encoder_mode(false), clockwise);
-#    ifdef OLED_ENABLE
-        oled_on();
-#    endif
-    }
-
-    return true;
-}
-#endif
-
-/*
-#ifdef RAW_ENABLE
-//char    raw_hid_buf[32]        = {};
-//uint8_t raw_hid_bytes_received = 0;
-void raw_hid_receive(uint8_t *data, uint8_t length) {
-    raw_hid_send(command_id, length);
-}
-#endif
-*/
