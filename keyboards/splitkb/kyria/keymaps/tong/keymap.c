@@ -101,8 +101,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     mod_state = get_mods();
     switch (keycode) {
+        /*
         case KC_BSPC: {
-            /*
             static bool delkey_reg istered;
             if (record->event.pressed) {
                 if (mod_state & MOD_MASK_SHIFT) {
@@ -120,30 +120,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             return true;
-            */
-            case KC_QMKBEST:
-                if (record->event.pressed) {
+        }
+        */
+        case KC_QMKBEST: {
+            if (record->event.pressed) {
                     // SEND_STRING("QMK is the best thing ever!");
                     // SEND_STRING(LCTL(LSFT(KC_U)));
                     // send_unicode_string("(ノಠ痊ಠ)ノ彡┻━┻");
                     // SEND_STRING(SS_LCTL("a") SS_LCTL("c"));
                     // send_string(KC_ENT);
-                } else {
-                    // when keycode QMKBEST is released
-                }
-                break;
-#ifdef ENCODER_ENABLE
-            case ENC_MODE_L:
-                if (record->event.pressed) cycle_encoder_mode(true, false);
-                break;
-            case ENC_MODE_R:
-                if (record->event.pressed) cycle_encoder_mode(false, false);
-                break;
-#endif
-            case KC_EVIL1:
-                oled_write_ln_P(PSTR("EVIL"), true);
-                break;
+            } else {
+                // when keycode QMKBEST is released
+            }
+            break;
         }
+#ifdef ENCODER_ENABLE
+        case ENC_MODE_L:
+            if (record->event.pressed) cycle_encoder_mode(true, false);
+            break;
+        case ENC_MODE_R:
+            if (record->event.pressed) cycle_encoder_mode(false, false);
+            break;
+#endif
+        case KC_EVIL1:
+            oled_write_ln_P(PSTR("EVIL"), true);
+            break;
     }
 
     /*
