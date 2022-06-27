@@ -1,7 +1,7 @@
 #include QMK_KEYBOARD_H
 #include <stdio.h>
 #include <string.h>
-#include "keymap.h"
+#include "keylogger.h"
 #ifdef ENCODER_ENABLE
 #    include "encoder.h"
 #endif
@@ -56,7 +56,7 @@ void matrix_scan_user(void) {
         */
     }
 }
-
+/*
 char keylog_str[24] = {};
 // int  keylogs_str_idx = 0;
 
@@ -71,7 +71,7 @@ void set_keylog(uint16_t keycode, keyrecord_t *record) {
         name = code_to_name[keycode];
     }
     snprintf(keylog_str, sizeof(keylog_str), "%dx%d %2d %c", record->event.key.row, record->event.key.col, keycode, name);
-    /*
+    / *
     if (keylogs_str_idx == sizeof(keylogs_str) - 1) {
         keylogs_str_idx = 0;
         for (int i = 0; i < sizeof(keylogs_str) - 1; i++) {
@@ -80,12 +80,13 @@ void set_keylog(uint16_t keycode, keyrecord_t *record) {
     }
     keylogs_str[keylogs_str_idx] = name;
     keylogs_str_idx++;
-    */
+    * /
 }
 
 const char *get_keylog(void) {
   return keylog_str;
 }
+*/
 
 uint8_t mod_state;
 

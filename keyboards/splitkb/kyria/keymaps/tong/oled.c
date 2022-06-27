@@ -2,7 +2,8 @@
 #    include <stdio.h>
 #    include <string.h>
 #    include "kyria.h"
-//#    include "keymap.h"
+#    include "keylogger.h"
+
 #    ifdef ENCODER_ENABLE
 #        include "encoder.h"
 #    endif
@@ -26,10 +27,10 @@ void oled_render_logo(void) {
     oled_write_raw_P(logo, sizeof(logo));
 }
 
-/*static void oled_render_keylog(void) {
-    // oled_write(keylog_str, false);
-    oled_write(get_keylog(), false);
-}*/
+void oled_render_keylog(void) {
+    //oled_write(keylog_str, false);
+    oled_write(read_keylog(), false);
+}
 
 static void oled_render_status_layer(void) {
     oled_write_P(PSTR("L:"), false);
@@ -145,7 +146,7 @@ static void oled_render_status(void) {
     */
    
     //oled_set_cursor(0, 3);
-    //oled_render_keylog();
+    oled_render_keylog();
     
     // oled_write_P(PSTR("\n"), false);
     //  oled_render_status_hid();

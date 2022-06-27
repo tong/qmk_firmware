@@ -2,9 +2,10 @@ OLED_ENABLE = yes
 ENCODER_ENABLE = yes
 LEADER_ENABLE = yes
 WPM_ENABLE = yes
-RAW_ENABLE = no
 #LTO_ENABLE = yes
 #COMBO_ENABLE =  yes
+EXTRAKEY_ENABLE = yes
+RAW_ENABLE = no
 
 VIA_ENABLE = no
 UNICODE_ENABLE = no
@@ -22,8 +23,8 @@ AUDIO_ENABLE = no
 CONSOLE_ENABLE = no
 COMMAND_ENABLE = no
 VELOCIKEY_ENABLE = no
-EXTRAKEY_ENABLE = no
 
+SRC += keylogger.c
 ifeq ($(strip $(ENCODER_ENABLE)), yes)
 	SRC += encoder.c
 endif
