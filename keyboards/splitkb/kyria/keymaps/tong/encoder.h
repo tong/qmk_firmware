@@ -17,9 +17,9 @@ encoder_mode_t encoder_right_mode;
 
 void encoder_utils_init(void);
 
-void           set_encoder_mode(bool left, encoder_mode_t mode);
-encoder_mode_t get_encoder_mode(bool left);
-void           cycle_encoder_mode(bool left, bool reverse);
+encoder_mode_t encoder_get_mode(bool left);
+void           encoder_set_mode(bool left, encoder_mode_t mode);
+void           encoder_cycle_mode(bool left, bool reverse);
 
 void encoder_action_volume(uint8_t clockwise);
 void encoder_action_word_nav(uint8_t clockwise);

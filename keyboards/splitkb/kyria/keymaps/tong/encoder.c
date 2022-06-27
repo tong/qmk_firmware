@@ -1,11 +1,11 @@
-#include "encoder_utils.h"
+#include "encoder.h"
 
 void encoder_utils_init(void) {
     encoder_left_mode  = ENC_MODE_VOLUME;
     encoder_right_mode = ENC_MODE_LEFT_RIGHT;
 }
 
-void set_encoder_mode(bool left, encoder_mode_t mode) {
+void encoder_set_mode(bool left, encoder_mode_t mode) {
     if (left) {
         encoder_left_mode = mode;
     } else {
@@ -13,7 +13,7 @@ void set_encoder_mode(bool left, encoder_mode_t mode) {
     }
 }
 
-encoder_mode_t get_encoder_mode(bool left) {
+encoder_mode_t encoder_get_mode(bool left) {
     if (left) {
         return encoder_left_mode;
     } else {
@@ -21,14 +21,14 @@ encoder_mode_t get_encoder_mode(bool left) {
     }
 }
 
-void cycle_encoder_mode(bool left, bool reverse) {
-    encoder_mode_t mode = get_encoder_mode(left);
+void encoder_cycle_mode(bool left, bool reverse) {
+    encoder_mode_t mode = encoder_get_mode(left);
     if (reverse) {
         mode = (mode == 0) ? (_ENC_MODE_LAST - 1) : (mode - 1);
     } else {
         mode = (mode == (_ENC_MODE_LAST - 1)) ? 0 : (mode + 1);
     }
-    set_encoder_mode(left, mode);
+    encoder_set_mode(left, mode);
 }
 
 void encoder_action_volume(uint8_t clockwise) {

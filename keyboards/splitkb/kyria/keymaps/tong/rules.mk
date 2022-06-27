@@ -2,9 +2,9 @@ OLED_ENABLE = yes
 ENCODER_ENABLE = yes
 LEADER_ENABLE = yes
 WPM_ENABLE = yes
+RAW_ENABLE = no
 #LTO_ENABLE = yes
-# COMBO_ENABLE =  yes
-RAW_ENABLE = yes
+#COMBO_ENABLE =  yes
 
 VIA_ENABLE = no
 UNICODE_ENABLE = no
@@ -22,24 +22,15 @@ AUDIO_ENABLE = no
 CONSOLE_ENABLE = no
 COMMAND_ENABLE = no
 VELOCIKEY_ENABLE = no
-#EXTRAKEY_ENABLE = no
-
-#SRC += gen.c
-#ifeq ($(strip $(LEADER_ENABLE)), yes)
-	 #SRC += leader.c
-#endif
+EXTRAKEY_ENABLE = no
 
 ifeq ($(strip $(ENCODER_ENABLE)), yes)
-	SRC += encoder_utils.c
-	#SRC += encoder.c
+	SRC += encoder.c
 endif
-
-#ifeq ($(strip $(OLED_ENABLE)), yes)
-	#SRC += oled.c
-#endif
-
-#ifeq ($(strip $(RAW_ENABLE)), yes)
-	#SRC += hid.c
-#endif
-
+ifeq ($(strip $(OLED_ENABLE)), yes)
+	SRC += oled.c
+endif
+ifeq ($(strip $(RAW_ENABLE)), yes)
+	SRC += hid.c
+endif
 
