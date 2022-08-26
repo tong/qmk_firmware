@@ -14,8 +14,8 @@
 #define OLED_DISPLAY_128X64
 #define OLED_BRIGHTNESS 255
 #define OLED_TIMEOUT 60000
-#define OLED_FADE_OUT
-#define OLED_FADE_OUT_INTERVAL 0x0F
+//#define OLED_FADE_OUT
+//#define OLED_FADE_OUT_INTERVAL 0x0F
 #define OLED_FONT_H "keyboards/splitkb/kyria/keymaps/tong/glcdfont.c"
 #endif
 
